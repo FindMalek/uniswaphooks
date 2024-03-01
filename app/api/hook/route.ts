@@ -4,31 +4,24 @@ export async function POST(req: Request) {
   try {
     const bodyAsString = await req.json();
     const body = JSON.parse(bodyAsString);
-    let { title, description, creator, website, github, categoryId } = body;
+    const { emoji, title, section, description, resourceUrl } = body;
 
-    if (!categoryId || categoryId === "") {
-      categoryId = "from-the-community";
-    }
-
-    const newHook = await db.hook.create({
+    const newResource = await db.resource.create({
       data: {
+        emoji,
         title,
+        section,
         description,
-        creator,
-        website,
-        github,
-        category: {
-          connect: {
-            id: categoryId,
-          },
-        },
+        resourceUrl,
+        // @ts-ignore: Unreachable code error
+        userId: session.user.id,
       },
     });
 
     return new Response(
       JSON.stringify({
-        message: "Hook created successfully",
-        data: newHook,
+        message: "Resource created successfully",
+        data: newResource,
       }),
       {
         status: 200,
@@ -56,16 +49,16 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const hooks = await db.hook.findMany({
-      include: {
-        category: true,
-        user: true
+    const resources = await db.resource.findMany({
+      orderBy: {
+        createdAt: "desc",
       },
     });
+
     return new Response(
       JSON.stringify({
-        message: "Hooks fetched successfully",
-        data: hooks,
+        message: "Resources fetched successfully",
+        data: resources,
       }),
       {
         status: 200,
@@ -75,6 +68,7 @@ export async function GET() {
       }
     );
   } catch (err: any) {
+    console.log(err);
     return new Response(
       JSON.stringify({
         message: "Something went wrong",
@@ -96,34 +90,32 @@ export async function PUT(req: Request) {
     const body = JSON.parse(bodyAsString);
     const {
       id,
+      emoji,
       title,
+      section,
       description,
-      creator,
-      website,
-      github,
+      resourceUrl,
       status,
-      categoryId,
     } = body;
 
-    const updatedHook = await db.hook.update({
+    const updatedResource = await db.resource.update({
       where: {
         id,
       },
       data: {
+        emoji,
         title,
+        section,
         description,
-        creator,
-        website,
-        github,
+        resourceUrl,
         status,
-        categoryId,
       },
     });
 
     return new Response(
       JSON.stringify({
-        message: "Hook updated successfully",
-        data: updatedHook,
+        message: "Resource updated successfully",
+        data: updatedResource,
       }),
       {
         status: 200,
@@ -155,7 +147,7 @@ export async function DELETE(req: Request) {
     const body = JSON.parse(bodyAsString);
     const { id } = body;
 
-    const deletedHook = await db.hook.delete({
+    const deletedResource = await db.resource.delete({
       where: {
         id,
       },
@@ -163,8 +155,8 @@ export async function DELETE(req: Request) {
 
     return new Response(
       JSON.stringify({
-        message: "Hook deleted successfully",
-        data: deletedHook,
+        message: "Resource deleted successfully",
+        data: deletedResource,
       }),
       {
         status: 200,
