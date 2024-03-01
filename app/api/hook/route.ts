@@ -59,6 +59,7 @@ export async function GET() {
     const hooks = await db.hook.findMany({
       include: {
         category: true,
+        user: true
       },
     });
     return new Response(
