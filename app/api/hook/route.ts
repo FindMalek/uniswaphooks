@@ -1,27 +1,49 @@
 import { db } from "@lib/prisma";
+import { authOptions } from "@lib/auth";
+import { getServerSession } from "next-auth";
 
 export async function POST(req: Request) {
   try {
-    const bodyAsString = await req.json();
-    const body = JSON.parse(bodyAsString);
-    const { emoji, title, section, description, resourceUrl } = body;
+    const body = await req.json();
+    let { title, description, creator, github, website, categoryId } = body;
 
-    const newResource = await db.resource.create({
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user) {
+      return new Response(
+        JSON.stringify({
+          message: "You are not authorized to perform this action",
+        }),
+        {
+          status: 401,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+
+    if (!categoryId || categoryId === "") {
+      categoryId = "from-the-community";
+    }
+
+    const newHook = await db.hook.create({
       data: {
-        emoji,
         title,
-        section,
         description,
-        resourceUrl,
+        creator,
+        github,
+        website,
         // @ts-ignore: Unreachable code error
         userId: session.user.id,
+        categoryId,
       },
     });
 
     return new Response(
       JSON.stringify({
-        message: "Resource created successfully",
-        data: newResource,
+        message: "Hook created successfully",
+        data: newHook,
       }),
       {
         status: 200,
@@ -49,16 +71,16 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const resources = await db.resource.findMany({
-      orderBy: {
-        createdAt: "desc",
+    const hooks = await db.hook.findMany({
+      include: {
+        category: true,
+        user: true,
       },
     });
-
     return new Response(
       JSON.stringify({
-        message: "Resources fetched successfully",
-        data: resources,
+        message: "Hooks fetched successfully",
+        data: hooks,
       }),
       {
         status: 200,
@@ -68,7 +90,6 @@ export async function GET() {
       }
     );
   } catch (err: any) {
-    console.log(err);
     return new Response(
       JSON.stringify({
         message: "Something went wrong",
@@ -88,34 +109,27 @@ export async function PUT(req: Request) {
   try {
     const bodyAsString = await req.json();
     const body = JSON.parse(bodyAsString);
-    const {
-      id,
-      emoji,
-      title,
-      section,
-      description,
-      resourceUrl,
-      status,
-    } = body;
+    const { id, title, description, creator, github, status, categoryId } =
+      body;
 
-    const updatedResource = await db.resource.update({
+    const updatedHook = await db.hook.update({
       where: {
         id,
       },
       data: {
-        emoji,
         title,
-        section,
         description,
-        resourceUrl,
+        creator,
+        github,
         status,
+        categoryId,
       },
     });
 
     return new Response(
       JSON.stringify({
-        message: "Resource updated successfully",
-        data: updatedResource,
+        message: "Hook updated successfully",
+        data: updatedHook,
       }),
       {
         status: 200,
@@ -147,7 +161,7 @@ export async function DELETE(req: Request) {
     const body = JSON.parse(bodyAsString);
     const { id } = body;
 
-    const deletedResource = await db.resource.delete({
+    const deletedHook = await db.hook.delete({
       where: {
         id,
       },
@@ -155,8 +169,8 @@ export async function DELETE(req: Request) {
 
     return new Response(
       JSON.stringify({
-        message: "Resource deleted successfully",
-        data: deletedResource,
+        message: "Hook deleted successfully",
+        data: deletedHook,
       }),
       {
         status: 200,
