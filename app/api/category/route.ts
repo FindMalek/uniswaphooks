@@ -2,7 +2,7 @@ import { db } from "@lib/prisma";
 
 export async function POST(req: Request) {
   try {
-    const bodyAsString = await req.json();
+     const bodyAsString = await req.json();
     const body = JSON.parse(bodyAsString);
     const { id, title, description, category, emoji, tag } = body;
 
