@@ -74,7 +74,7 @@ model Hook {
   creator     String
   website     String
   github      String
-  status      String @default("pending")
+  status      String @default("draft")
 
   userId String 
   user   User   @relation(fields: [userId], references: [id])
@@ -84,6 +84,8 @@ model Hook {
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
+
+  @@map(name: "hook")
 }
 
 model Category {
@@ -100,6 +102,8 @@ model Category {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map(name: "category")
 }
 
 model Resource {
@@ -121,4 +125,6 @@ model Resource {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map(name: "resource")
 }
