@@ -75,6 +75,9 @@ export async function GET() {
       include: {
         category: true,
         user: true,
+        network: true,
+        contract: true,
+        deploymentDate: true,
       },
     });
     return new Response(
@@ -90,97 +93,6 @@ export async function GET() {
       }
     );
   } catch (err: any) {
-    return new Response(
-      JSON.stringify({
-        message: "Something went wrong",
-        error: err.message,
-      }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  }
-}
-
-export async function PUT(req: Request) {
-  try {
-    const bodyAsString = await req.json();
-    const body = JSON.parse(bodyAsString);
-    const { id, title, description, creator, github, status, categoryId } =
-      body;
-
-    const updatedHook = await db.hook.update({
-      where: {
-        id,
-      },
-      data: {
-        title,
-        description,
-        creator,
-        github,
-        status,
-        categoryId,
-      },
-    });
-
-    return new Response(
-      JSON.stringify({
-        message: "Hook updated successfully",
-        data: updatedHook,
-      }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  } catch (err: any) {
-    console.log(err);
-    return new Response(
-      JSON.stringify({
-        message: "Something went wrong",
-        error: err.message,
-      }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  }
-}
-
-export async function DELETE(req: Request) {
-  try {
-    const bodyAsString = await req.json();
-    const body = JSON.parse(bodyAsString);
-    const { id } = body;
-
-    const deletedHook = await db.hook.delete({
-      where: {
-        id,
-      },
-    });
-
-    return new Response(
-      JSON.stringify({
-        message: "Hook deleted successfully",
-        data: deletedHook,
-      }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  } catch (err: any) {
-    console.log(err);
     return new Response(
       JSON.stringify({
         message: "Something went wrong",

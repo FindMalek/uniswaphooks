@@ -48,8 +48,8 @@ model User {
   createdAt     DateTime  @default(now()) @map(name: "created_at")
   updatedAt     DateTime  @default(now()) @map(name: "updated_at")
 
-  accounts  Account[]
-  sessions  Session[]
+  accounts Account[]
+  sessions Session[]
 
   hooks     Hook[]
   resources Resource[]
@@ -67,8 +67,7 @@ model VerificationToken {
 }
 
 model Hook {
-  id Int @id @default(autoincrement())
-
+  id          String @id @default(uuid())
   title       String
   description String
   creator     String
@@ -76,7 +75,7 @@ model Hook {
   github      String
   status      String @default("draft")
 
-  userId String 
+  userId String
   user   User   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
@@ -85,7 +84,49 @@ model Hook {
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
 
+  networkId  String?
+  network    Network? @relation(fields: [networkId], references: [id])
+  
+  contractId String?
+  contract         Contract? @relation(fields: [contractId], references: [id])
+
+  deploymentDateId String?
+  deploymentDate DeploymentDate? @relation(fields: [deploymentDateId], references: [id])
+
   @@map(name: "hook")
+}
+
+model Network {
+  id         String  @id @default(uuid())
+  name       String
+  networkTag String
+  imageUrl   String
+  verified   Boolean @default(false)
+
+  hooks Hook[]
+
+  @@map(name: "network")
+}
+
+model Contract {
+  id              String @id @default(uuid())
+  contractName    String
+  compilerVersion String
+  creator         String
+  transactionHash String
+
+  hooks Hook[]
+
+  @@map(name: "contract")
+}
+
+model DeploymentDate {
+  id       String @id @default(uuid())
+  date     String
+  dateTime String
+  hooks    Hook[]
+
+  @@map(name: "deploymentDate")
 }
 
 model Category {
@@ -107,7 +148,7 @@ model Category {
 }
 
 model Resource {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
 
   title String
 
@@ -115,7 +156,7 @@ model Resource {
   emoji   String
 
   resourceUrl String
-  description String  @db.Text
+  description String @db.Text
 
   status String @default("pending")
   tag    String @default("community")
