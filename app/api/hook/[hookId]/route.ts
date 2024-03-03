@@ -111,6 +111,7 @@ export async function PUT(
         contract: {
           create: {
             contractName: contract.name,
+            deploymentAddress: contract.deploymentAddress,
             compilerVersion: contract.compilerVersion,
             creator: contract.creator,
             transactionHash: contract.transactionHash,
