@@ -48,8 +48,8 @@ model User {
   createdAt     DateTime  @default(now()) @map(name: "created_at")
   updatedAt     DateTime  @default(now()) @map(name: "updated_at")
 
-  accounts Account[]
-  sessions Session[]
+  accounts  Account[]
+  sessions  Session[]
 
   hooks     Hook[]
   resources Resource[]
@@ -67,28 +67,28 @@ model VerificationToken {
 }
 
 model Hook {
-  id          String @id @default(uuid())
-  title       String
-  description String
-  creator     String
-  website     String
-  github      String
-  status      String @default("draft")
+  id             String   @id @default(uuid())
+  title          String
+  description    String
+  creator        String
+  website        String
+  github         String
+  status         String   @default("draft")
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId     String
+  category       Category @relation(fields: [categoryId], references: [id])
 
-  networkId  String?
-  network    Network? @relation(fields: [networkId], references: [id])
+  networkId      String?
+  network        Network?  @relation(fields: [networkId], references: [id])
   
-  contractId String?
-  contract         Contract? @relation(fields: [contractId], references: [id])
+  contractId     String?
+  contract       Contract? @relation(fields: [contractId], references: [id])
 
   deploymentDateId String?
   deploymentDate DeploymentDate? @relation(fields: [deploymentDateId], references: [id])
@@ -97,34 +97,33 @@ model Hook {
 }
 
 model Network {
-  id         String  @id @default(uuid())
-  name       String
-  networkTag String
-  imageUrl   String
-  verified   Boolean @default(false)
+  id             String   @id @default(uuid())
+  name           String
+  imageUrl       String
+  verified       Boolean  @default(false)
 
-  hooks Hook[]
+  hooks          Hook[]
 
   @@map(name: "network")
 }
 
 model Contract {
-  id              String @id @default(uuid())
+  id             String   @id @default(uuid())
   contractName    String
   compilerVersion String
-  creator         String
-  transactionHash String
+  creator         String?
+  transactionHash String?
 
-  hooks Hook[]
+  hooks           Hook[]
 
   @@map(name: "contract")
 }
 
 model DeploymentDate {
-  id       String @id @default(uuid())
-  date     String
-  dateTime String
-  hooks    Hook[]
+  id             String   @id @default(uuid())
+  date      String
+  dateTime  String
+  hooks     Hook[]
 
   @@map(name: "deploymentDate")
 }
@@ -148,7 +147,7 @@ model Category {
 }
 
 model Resource {
-  id String @id @default(uuid())
+  id             String   @id @default(uuid())
 
   title String
 
@@ -156,7 +155,7 @@ model Resource {
   emoji   String
 
   resourceUrl String
-  description String @db.Text
+  description String  @db.Text
 
   status String @default("pending")
   tag    String @default("community")
