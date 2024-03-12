@@ -23,18 +23,12 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!categoryId || categoryId === "") {
-      categoryId = "from-the-community";
-    }
-
     const newHook = await db.hook.create({
       data: {
         title,
         description,
         creator,
         github,
-        website,
-        // @ts-ignore: Unreachable code error
         userId: session.user.id,
         categoryId,
       },
